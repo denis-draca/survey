@@ -59,7 +59,7 @@ handles.users = ["test", "code"];
 handles.presets = 4;
 handles.currentPreset = 1;
 handles.currentUser = 1;
-
+handles.surveyName = [];
 axes(handles.axes1);
 
 guidata(hObject, handles);
@@ -97,7 +97,36 @@ function buSubmit_Callback(hObject, eventdata, handles)
 % hObject    handle to buSubmit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+handles.surveyName = handles.Name.String;
+currentPreset = handles.currentPreset;
+currentUser = handles.currentUser;
+
+currentResults = zeros(1,3);
+questionList = ["first","second","third"];
+
+for i = 1:3
+    for x = 1:5
+        structName = strcat(questionList(1,i),string(x));
+        cellName = cellstr(structName);
+        
+        if(handles.(cellName{1}).Value)
+           currentResults(1,i) = x; 
+        end
+    end
+end
+
+feedback = handles.feedback.String;
+
+
+
+handles.FullResults{currentPreset}.name = handles.surveyName;
+handles.FullResults{currentPreset}.results(:,:, handles.currentUser) = currentResults;
+handles.FullResults{currentPreset}.feedback{currentUser} = feedback;
+
 handles.currentUser = handles.currentUser + 1;
+
+
+
 
 if(handles.currentUser > length(handles.users))
    handles.currentUser = 1;
@@ -106,6 +135,7 @@ if(handles.currentUser > length(handles.users))
    
    if (handles.currentPreset > handles.presets)
       handles.currentPreset = 1000; 
+      
    end
 end
 
@@ -184,6 +214,10 @@ handles = guidata(hObject);
 
 if(handles.currentPreset == 1000)
    stop(handles.timer);
+   set(handles.writtenDirections, 'String',"You have completed all the questions, thank you");
+   
+   writeToFile(handles);
+   
    return;
 %    delete(handles);
 end
@@ -192,9 +226,15 @@ location = ['C:\Users\DenisDraca\Documents\survey\results\'];
 userfolder = handles.users(1,handles.currentUser);
 preset = string(handles.currentPreset);
 
-location = strcat(location, userfolder, '\', preset,'\',preset,'.jpg');
+img_location = strcat(location, userfolder, '\', preset,'\',preset,'.jpg');
+text_location = strcat(location, userfolder, '\', preset,'\',preset,'.txt');
 
-img = imread(char(location));
+img = imread(char(img_location));
+text = fileread(char(text_location));
+
+set(handles.writtenDirections, 'String',text);
+
+
 imshow(img, 'Parent', handles.axes1);
 
 % guidata(hObject,handles);
@@ -221,3 +261,28 @@ function Name_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+function writeToFile(handles)
+name = char(handles.FullResults{1}.name);
+file = fopen(['C:\Users\DenisDraca\Documents\survey\surveyResults\',name,'.txt'],'w');
+
+file_feedback = fopen(['C:\Users\DenisDraca\Documents\survey\surveyResults\',name,'_feedback','.txt'],'w');
+
+
+for i = 1:handles.presets
+   results = handles.FullResults{i}.results;
+   feedback = handles.FullResults{i}.feedback;
+   
+   for x = 1:length(handles.users)
+      fprintf(file, '%s,', string(results(:,:,x)));
+      fprintf(file_feedback, '%s \r\n\r\n' , feedback{x});
+   end
+   
+   fprintf(file, '\r\n');
+end
+
+fclose(file);
+fclose(file_feedback);
+
+
+

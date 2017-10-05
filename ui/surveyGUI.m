@@ -22,7 +22,7 @@ function varargout = surveyGUI(varargin)
 
 % Edit the above text to modify the response to help surveyGUI
 
-% Last Modified by GUIDE v2.5 04-Oct-2017 16:54:40
+% Last Modified by GUIDE v2.5 05-Oct-2017 19:49:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -283,6 +283,3 @@ end
 
 fclose(file);
 fclose(file_feedback);
-
-
-

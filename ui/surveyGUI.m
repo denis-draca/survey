@@ -55,11 +55,12 @@ function surveyGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for surveyGUI
 handles.output = hObject;
 
-handles.users = ["test", "code"];
-handles.presets = 4;
+handles.users = ["Anna", "Braeden", "Cameron", "computer", "Corey"];
+handles.presets = 5;
 handles.currentPreset = 1;
 handles.currentUser = 1;
 handles.surveyName = [];
+handles.dispQuestion = 0;
 axes(handles.axes1);
 
 guidata(hObject, handles);
@@ -72,6 +73,13 @@ handles.timer = timer(...
     'TimerFcn', {@setUser,hObject}); % Specify callback function.
 
 start(handles.timer)
+
+handles.timer2 = timer(...
+    'ExecutionMode', 'fixedRate', ...       % Run timer repeatedly.
+    'Period', 0.1, ...                      % Initial period is 0.1 sec.
+    'TimerFcn', {@checkmouse,hObject}); % Specify callback function.
+
+start(handles.timer2)
 
 
 % Update handles structure
@@ -132,6 +140,7 @@ if(handles.currentUser > length(handles.users))
    handles.currentUser = 1;
    
    handles.currentPreset = handles.currentPreset + 1;
+   handles.dispQuestion = 1;
    
    if (handles.currentPreset > handles.presets)
       handles.currentPreset = 1000; 
@@ -222,7 +231,13 @@ if(handles.currentPreset == 1000)
 %    delete(handles);
 end
 
-location = ['C:\Users\DenisDraca\Documents\survey\results\'];
+if(handles.dispQuestion)
+    handles.FullResults{handles.currentPreset}.selected = posInput(handles.currentPreset);
+    
+    handles.dispQuestion = 0;
+end
+
+location = ['C:\Users\Denis\Documents\survey\results\'];
 userfolder = handles.users(1,handles.currentUser);
 preset = string(handles.currentPreset);
 
@@ -264,9 +279,9 @@ end
 
 function writeToFile(handles)
 name = char(handles.FullResults{1}.name);
-file = fopen(['C:\Users\DenisDraca\Documents\survey\surveyResults\',name,'.txt'],'w');
+file = fopen(['C:\Users\Denis\Documents\survey\surveyResults\',name,'.txt'],'w');
 
-file_feedback = fopen(['C:\Users\DenisDraca\Documents\survey\surveyResults\',name,'_feedback','.txt'],'w');
+file_feedback = fopen(['C:\Users\Denis\Documents\survey\surveyResults\',name,'_feedback','.txt'],'w');
 
 
 for i = 1:handles.presets
@@ -283,3 +298,7 @@ end
 
 fclose(file);
 fclose(file_feedback);
+
+function checkmouse(~,~,hObject)
+pos = get(gca, 'CurrentPoint')
+

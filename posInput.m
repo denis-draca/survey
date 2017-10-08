@@ -1,14 +1,15 @@
 function [selectedPos] = posInput(presetNo)
 found = 0;
 list = ["Anna", "Braeden", "Cameron", "computer", "Corey"];
-
+userName = getenv('username');
 while(~found)
     
-    f = figure(1);
+    f = figure('Name','Please select the best path');
+    
     axes(f);
     for i = 1:5
         subplot(3,2,i);
-        location = ['C:\Users\Denis\Documents\survey\results\'];
+        location = ['C:\Users\',userName,'\Documents\survey\results\'];
         userfolder = list(1,i);
         preset = string(presetNo);
         
@@ -19,36 +20,36 @@ while(~found)
     end
     
     drawnow();
-    
+    set_fig_position(f,0,0,1000,1000);
     ginput(1);
-    pos = get(0,'PointerLocation');
+    pos = get(0,'PointerLocation')
     
     x = pos(1,1);
     y = pos(1,2);
     
     selectedPos = [];
     
-    if (and(x >= 569.8, x <= 739.4))
+    if (and(x >= 136, x <= 467))
         
-        if(and(y <= 727.4, x >= 640.2))
+        if(and(y <= 905, y >= 731))
             selectedPos = 1;
         end
         
-        if(and(y <= 601, x >= 516.2))
+        if(and(y <= 604, y >= 432))
             selectedPos = 3;
         end
         
-        if(and(y <= 475.4, x >= 389.8))
+        if(and(y <= 303, y >= 132))
             selectedPos = 5;
         end
         
-    elseif(and(x >= 817.8, x <= 986.6))
+    elseif(and(x >= 578, x <= 908))
         
-        if(and(y <= 727.4, x >= 640.2))
+        if(and(y <= 905, y >= 731))
             selectedPos = 2;
         end
         
-        if(and(y <= 601, x >= 516.2))
+        if(and(y <= 604, y >= 432))
             selectedPos = 4;
         end
         
@@ -58,6 +59,7 @@ while(~found)
     
     if(selectedPos > 0)
         found = 1;
+        delete(f);
     end
 end
 

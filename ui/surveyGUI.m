@@ -74,13 +74,6 @@ handles.timer = timer(...
 
 start(handles.timer)
 
-handles.timer2 = timer(...
-    'ExecutionMode', 'fixedRate', ...       % Run timer repeatedly.
-    'Period', 0.1, ...                      % Initial period is 0.1 sec.
-    'TimerFcn', {@checkmouse,hObject}); % Specify callback function.
-
-start(handles.timer2)
-
 
 % Update handles structure
 guidata(hObject, handles);
@@ -221,7 +214,18 @@ function third5_Callback(hObject, eventdata, handles)
 function setUser(~,~,hObject)
 handles = guidata(hObject);
 
-if(handles.currentPreset == 1000)
+if(handles.dispQuestion)
+    if (handles.currentPreset == 1000)
+        handles.FullResults{5}.selected = posInput(5);
+        handles.dispQuestion = 0;
+    else
+        handles.FullResults{handles.currentPreset - 1}.selected = posInput(handles.currentPreset - 1);
+        handles.dispQuestion = 0;
+    end
+    guidata(hObject, handles);
+end
+
+if(handles.currentPreset == 1000 )
    stop(handles.timer);
    set(handles.writtenDirections, 'String',"You have completed all the questions, thank you");
    
@@ -231,13 +235,9 @@ if(handles.currentPreset == 1000)
 %    delete(handles);
 end
 
-if(handles.dispQuestion)
-    handles.FullResults{handles.currentPreset}.selected = posInput(handles.currentPreset);
-    
-    handles.dispQuestion = 0;
-end
+userName = getenv('username');
 
-location = ['C:\Users\Denis\Documents\survey\results\'];
+location = ['C:\Users\',userName,'\Documents\survey\results\'];
 userfolder = handles.users(1,handles.currentUser);
 preset = string(handles.currentPreset);
 
@@ -278,27 +278,30 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function writeToFile(handles)
-name = char(handles.FullResults{1}.name);
-file = fopen(['C:\Users\Denis\Documents\survey\surveyResults\',name,'.txt'],'w');
+userName = getenv('username');
 
-file_feedback = fopen(['C:\Users\Denis\Documents\survey\surveyResults\',name,'_feedback','.txt'],'w');
+
+name = char(handles.FullResults{1}.name);
+file = fopen(['C:\Users\',userName,'\Documents\survey\surveyResults\',name,'.txt'],'w');
+
+file_feedback = fopen(['C:\Users\',userName,'\Documents\survey\surveyResults\',name,'_feedback','.txt'],'w');
 
 
 for i = 1:handles.presets
    results = handles.FullResults{i}.results;
    feedback = handles.FullResults{i}.feedback;
+   best = handles.FullResults{i}.selected;
    
    for x = 1:length(handles.users)
       fprintf(file, '%s,', string(results(:,:,x)));
       fprintf(file_feedback, '%s \r\n\r\n' , feedback{x});
    end
    
+   fprintf(file, '%s', string(best));
+   
    fprintf(file, '\r\n');
 end
 
 fclose(file);
 fclose(file_feedback);
-
-function checkmouse(~,~,hObject)
-pos = get(gca, 'CurrentPoint')
 

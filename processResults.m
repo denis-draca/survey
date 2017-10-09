@@ -1,4 +1,4 @@
-participants = ["Daniela", "Andrew", "Matt"];
+participants = ["Daniela", "Andrew", "Matt", "Somaia", "Savvas"];
 
 results = [];
 userName = getenv('username');

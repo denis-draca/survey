@@ -23,8 +23,10 @@ while(~found)
     set_fig_position(f,0,0,700,1000);
     drawnow;
     
-    ginput(1);
-    pos = get(0,'PointerLocation');
+%     ginput(1);
+    while(1)
+        pos = get(0,'PointerLocation')
+    end
     
     x = pos(1,1);
     y = pos(1,2);
@@ -33,25 +35,25 @@ while(~found)
     
     if (and(x >= 158, x <= 445))
         
-        if(and(y <= 730, y >= 584))
+        if(and(y <= 905, y >= 731))
             selectedPos = 1;
         end
         
-        if(and(y <= 522, y >= 372))
+        if(and(y <= 604, y >= 432))
             selectedPos = 3;
         end
         
-        if(and(y <= 313, y >= 164))
+        if(and(y <= 303, y >= 132))
             selectedPos = 5;
         end
         
     elseif(and(x >= 597, x <= 885))
         
-        if(and(y <= 730, y >= 584))
+        if(and(y <= 905, y >= 731))
             selectedPos = 2;
         end
         
-        if(and(y <= 522, y >= 372))
+        if(and(y <= 604, y >= 432))
             selectedPos = 4;
         end
         

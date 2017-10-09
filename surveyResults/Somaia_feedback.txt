@@ -1,0 +1,50 @@
+- 
+
+Maybe change the direction of the person/thing thats moving,since its facing north the whole way, but in reality you would turn around and do a 180. 
+
+- 
+
+- 
+
+- 
+
+- 
+
+west not east?- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+directions should be relative to the direction person is facing- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+- 
+
+left and right are not diagonal lines/directions, might be a bit confusing- 
+
+left and right are not diagonal lines/directions, might be a bit confusing- 
+

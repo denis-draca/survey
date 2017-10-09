@@ -102,20 +102,9 @@ for i = 1:length(results)
     end
     
 end
-f1 = figure('Name', 'Total SCORE');
-y = [user1,user2,user3,user4,user5];
-bar(y);
-f2 = figure('Name','Total BEST');
-bar(count);
+f = figure('Name', "SCORE");
+ y = [user1,user2,user3,user4,user5];
+ bar(y);
+f2 = figure('Name',"BEST");
+ bar(count);
 
-f3 = figure('Name', 'Average SCORE');
-bar(y./length(results));
-
-f4 = figure('Name', 'Average BEST');
-bar(count./length(results));
-
-
-saveas(f1,['C:\Users\',userName,'\Documents\survey\saved figures\totalScore.jpg']);
-saveas(f2,['C:\Users\',userName,'\Documents\survey\saved figures\totalBest.jpg']);
-saveas(f3,['C:\Users\',userName,'\Documents\survey\saved figures\averageScore.jpg']);
-saveas(f4,['C:\Users\',userName,'\Documents\survey\saved figures\averageBest.jpg']);

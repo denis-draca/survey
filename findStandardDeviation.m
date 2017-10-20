@@ -2,7 +2,7 @@
 clear all;
 clc;
 close all;
-%%
+%% Load Participant Results
 
 users = ["Anna", "Braeden", "Cameron", "computer", "Corey"];
 userName = getenv('username');
@@ -106,7 +106,7 @@ for i = 1:length(totalWaypoints(:,1))
     
 end
 
-%% Presets 2 & 3
+%% Extract Presets 2 & 3
 
 users = ["Anna", "Braeden", "Cameron", "computer", "Corey"];
 userName = getenv('username');
@@ -152,9 +152,10 @@ for i = 1:length(users)
     end
     
 end
+%% Dist to centre
 
 for i = 1:2
-    figure(i)
+%     figure(i)
     AllValues = [];
     stepsX = [];
     stepsY = [];
@@ -174,17 +175,96 @@ for i = 1:2
     for step = 1:length(stepsX(:,1))
         %         hold on;
         
+        meanValue = [mean(stepsX(step,:)),mean(stepsY(step,:))]
+        
+        distance2Mean = [];
+        
+        for stepTest = 1:length(stepsX(step,:))
+
+            distance2Mean(1,stepTest) = sqrt((meanValue(1,1) - ...
+                stepsX(step,stepTest))^2 + ...
+                (meanValue(1,2) - stepsY(step,stepTest))^2);
+            
+        end
+        
+        figure(i);
+        
+        subplot(1,length(stepsX(:,1)),step);
+        
+        sigmaValue = std(distance2Mean);
+        CentreMean = mean(distance2Mean);
+        
+%         ezplot(@(x) normpdf(x,0,sigmaValue),[-10,10]);
+        values = normpdf([-10:0.1:10],CentreMean,sigmaValue);
+        
+        posValue = findPos(-10:0.1:10, CentreMean);
+        yMax = values(1, posValue);
+        plot([-10:0.1:10], values);
+        
+        
+        titleName = {'Distance from centre',['Preset ',num2str(i + 1), ...
+           ' Point: ', num2str(step), ' \mu = ' num2str(CentreMean),' \sigma = ', num2str(sigmaValue)]};
+    
+        title(titleName);
+        xlabel("Data");
+        ylabel("Probability");
+
+        markerRangeX = [distance2Mean(1,4), distance2Mean(1,4)];
+        markerRangeY = [0 yMax];
+
+        hold on;
+        plot(markerRangeX, markerRangeY);
+
+        distance = abs(CentreMean - distance2Mean(1,4))/sigmaValue;
+
+        leg = ['Computer Agent', newline, [num2str(distance),'*\sigma']];
+
+        legend('Normal Distribution', leg);
+        
+    end
+    
+end
+
+
+%% Calculate multivariate distribution
+for i = 1:1
+    figure(i)
+    AllValues = [];
+    stepsX = [];
+    stepsY = [];
+    for x = 1:length(users)
+        
+        userValues = agent{x}.preset{i};
+        
+        for step = 2:length(userValues(:,1)) - 1
+            
+            stepsX(step - 1, x) = userValues(step,1);
+            stepsY(step - 1, x) = userValues(step,2);
+            
+        end
+    end
+    
+    
+    for step = 1:length(stepsX(:,1))
+        %         hold on;
+        figure(i);
         meanValue = [mean(stepsX(step,:)),mean(stepsY(step,:))];
         sigma = [std(stepsX(step,:)),(std(stepsY(step,:)))];
         
-        x1 = -3:.2:3; x2 = -3:.2:3;
+        x1 = -100:.5:100; x2 = -100:.5:100;
         [X1,X2] = meshgrid(x1,x2);
         
-        F = mvnpdf([X1(:) X2(:)],meanValue,sigma);
+        sigmaUSE = cov([stepsX(step,:)',stepsY(step,:)']);
+%         sigmaUSE = [1 -0;0 1];
+        axisRange = [(meanValue(1,1) - 20) (meanValue(1,1) + 20), ...
+            (meanValue(1,2) - 20) (meanValue(1,2) + 20) 0 .4];
+        
+        hold on;
+        F = mvnpdf([X1(:) X2(:)],meanValue, sigmaUSE);
         F = reshape(F,length(x2),length(x1));
         surf(x1,x2,F);
         caxis([min(F(:))-.5*range(F(:)),max(F(:))]);
-        axis([-3 3 -3 3 0 .4])
+        axis([0 100 0 40 0 0.4])
         
     end
     
